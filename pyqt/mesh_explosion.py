@@ -64,6 +64,7 @@ class DataForEachMeshTerm():
                 count = 0
                 for term in _terms:
                     count = count + 1
+                    # Getting abstract here
                     _pmids, mtdummy = api.fetch_data(term,_retmax)
                     # Get abs for all ids together
                     ids = ""

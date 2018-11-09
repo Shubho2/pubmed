@@ -21,20 +21,22 @@ class PostProcessing():
         abstracts = json_object["abstracts"]
         titles = json_object["titles"]
         mesh_terms = json_object["meshterms"]
-        toptitles,topabs = self.split_abstracts(index,abstracts,titles)
-        return toptitles, topabs
+        toptitles,topabs, sameabs = self.split_abstracts(index,abstracts,titles)
+        return toptitles, topabs, sameabs
 
 
     def split_abstracts(self,index,abstracts,titles):
         count = 0
         allabs = []
+        sameabs = [] # nedded for Gene tagging
         alltitles = []
         while(count < 4 and index < len(abstracts)):
             allabs.append(self.getProcessedAbs(abstracts[index]))
             alltitles.append(self.getProcessedTitle(titles[index]))
+            sameabs.append(abstracts[index])
             index += 1
             count += 1
-        return alltitles,allabs
+        return alltitles,allabs,sameabs
 
 
     def getProcessedAbs(self, abstract):
@@ -139,14 +141,40 @@ class PostProcessing():
                 gene_dict[gene] = data.count(gene)+1.0
 
         
-        wordcloud = WordCloud(width = 800, height = 800,
-                                background_color ='white',
-                                min_font_size = 10).fit_words(gene_dict)
+        wordcloud = WordCloud(width = 1000, height = 500).fit_words(gene_dict)
         
         # plot the WordCloud image                       
-        fig = plt.figure(figsize = (8, 8), facecolor = None)
+        fig = plt.figure(figsize=(15,8))
         plt.imshow(wordcloud)
         plt.tight_layout(pad = 0)
         plt.axis("off")
         fig.canvas.set_window_title("Gene cloud")
         plt.show()
+        plt.close()
+
+    def mesh_cloud(self,term_id,search_term):
+        print("Mesh cloud called..")
+        file_name = "data_folder/"+search_term+"/"+str(term_id)+'.json'
+        f = open(file_name, 'r')
+        json_object = json.load(f)
+        f.close()
+
+        mesh_terms_matrix = json_object["meshterms"]
+        mesh_array = []
+        for arr in mesh_terms_matrix:
+            for word in arr:
+                mesh_array.append(word)
+        unique_string=(" ").join(mesh_array)
+        if(len(unique_string) > 0):
+            wordcloud = WordCloud(width = 1000, height = 500).generate(unique_string)
+        else:
+            regexp=r"\w[\w' ]+"
+            my_list=["No mesh terms found"]
+            wordcloud = WordCloud(width=1000, height=500, regexp=r"\w[\w' ]+").generate("+".join(my_list))
+        mesh = plt.figure(figsize=(15,8))
+        plt.imshow(wordcloud)
+        plt.tight_layout(pad = 0)
+        plt.axis("off")
+        mesh.canvas.set_window_title("Mesh cloud")
+        plt.show()
+        plt.close()

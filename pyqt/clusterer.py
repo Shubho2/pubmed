@@ -73,7 +73,7 @@ class Clusterer:
 
 		cluster_labels = km.labels_
 		cluster_centers = km.cluster_centers_
-		print("cluster centers: ",cluster_centers)
+		# print("cluster centers: ",cluster_centers)
 		query_clusters = []
 		query_clusters_pmids = []
 
@@ -99,21 +99,23 @@ class Clusterer:
 
 		relevant_docs = self.related_docs
 
-		# random.shuffle(relevant_docs)
+		random.shuffle(relevant_docs)
 
-		# learning vs testing split
+		# learning vs testing split of Golden corpus 
 
-		training_cnt = int(len(relevant_docs))
+		training_cnt = int(0.5*len(relevant_docs))
 		relevant_known = set(relevant_docs[:training_cnt])
+		relevant_blind = set(relevant_docs[training_cnt:])
 		
-		cluster_score = [float(len(relevant_known.intersection(cluster_pmids)))/float(len(cluster_pmids)) for cluster_pmids in query_clusters_pmids]
+		cluster_score = [float(len(relevant_known.intersection(cluster_pmids))/(len(cluster_pmids) + 1)) for cluster_pmids in query_clusters_pmids]
 		
 		print(cluster_score)
-		cluster_score_relative = [score/max(cluster_score) for score in cluster_score]
+		cluster_score_relative = [float(score/max(cluster_score)) for score in cluster_score]
 		
-		print ("Cluster ID\tRelevance Score")
+		blind_intersection = [len(relevant_blind.intersection(cluster_pmids)) for cluster_pmids in query_clusters_pmids]
+		print ("Cluster ID\tRelevance Score\tBlind Intersection")
 		for i in range(0,num_clusters):
-		    print (str(i) + "\t\t" + str(cluster_score_relative[i]))
+		    print (str(i) + "\t\t" + str(cluster_score_relative[i]) + "\t\t" + str(blind_intersection[i]))
 
 		clus_dict = OrderedDict()
 		final_corpus = set()

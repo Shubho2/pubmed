@@ -1,13 +1,14 @@
 import sys
 from PyQt5.QtWidgets import (QWidget,QVBoxLayout,QPushButton,QScrollArea,QFormLayout,QLabel,QApplication,QMainWindow)
 
-from PyQt5.QtCore import *
+# from PyQt5.QtCore import *
 
 # from pyqt import App
 
-class MoreMeshTerms(object):
+class MoreMeshTerms(QWidget):
     
-    def setupUi(self,duplicate,parent, mesh_terms, mesh_terms_id):
+    def __init__(self,duplicate,parent, mesh_terms, mesh_terms_id):
+        QWidget.__init__(self)
         self.mesh_terms = mesh_terms
         self.mesh_terms_id = mesh_terms_id
         self.duplicate = duplicate
@@ -34,7 +35,7 @@ class MoreMeshTerms(object):
         parent.setCentralWidget(self.centralWidget)
 
 
-    # def addbutton(self):
+        # add buttons 
         i = 1
         for x in range(0,len(self.mesh_terms)):
             cl = ClusterLabel(self.scrollAreaWidgetContents,i)
@@ -45,10 +46,6 @@ class MoreMeshTerms(object):
                 z = TermButton(self.scrollAreaWidgetContents,self.mesh_terms[x][y],self.mesh_terms_id[x][y],self.duplicate)
                 c1 = self.formLayout.rowCount()
                 self.formLayout.setWidget(c1, QFormLayout.LabelRole, z)
-
-               
-    # def getTermId(self):
-    #     pass
 
 class ClusterLabel(QLabel):
     def __init__(self,parent,data):
@@ -66,12 +63,3 @@ class TermButton(QPushButton):
     def term_clicked(self):
         self.duplicate.current_index = 0 # Make sure result starts with index 0
         self.duplicate.populateTitleAbs(self.id)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = QMainWindow()
-    ex = MoreMeshTerms()
-    ex.setupUi(window,None,None,None)
-    window.show()
-    sys.exit(app.exec_())
