@@ -47,7 +47,7 @@ class GoldenCorpus():
 
 
     def saveGoldenCorpus(self, _pmids):
-        print("save golden corpus called..")
+        print("Save golden corpus called..")
         _genefile = []
         if not os.path.exists(self.get_corpus_folder(self.query)):
             os.mkdir(self.get_corpus_folder(self.query))
