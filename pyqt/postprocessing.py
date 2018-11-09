@@ -150,3 +150,5 @@ class PostProcessing():
         plt.axis("off")
         fig.canvas.set_window_title("Gene cloud")
         plt.show()
+
+        

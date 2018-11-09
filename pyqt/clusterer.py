@@ -99,21 +99,28 @@ class Clusterer:
 
 		relevant_docs = self.related_docs
 
-		# random.shuffle(relevant_docs)
+		random.shuffle(relevant_docs)
 
 		# learning vs testing split
 
-		training_cnt = int(len(relevant_docs))
+		training_cnt = int(0.8*len(relevant_docs))
 		relevant_known = set(relevant_docs[:training_cnt])
+		relevant_blind = set(relevant_docs[training_cnt:])
 		
-		cluster_score = [float(len(relevant_known.intersection(cluster_pmids)))/float(len(cluster_pmids)) for cluster_pmids in query_clusters_pmids]
+		cluster_score = [float(len(relevant_known.intersection(cluster_pmids)))/1+float(len(cluster_pmids)) for cluster_pmids in query_clusters_pmids]
 		
 		print(cluster_score)
 		cluster_score_relative = [score/max(cluster_score) for score in cluster_score]
+
+		cluster_blind_intersect = [len(relevant_blind.intersection(cluster_pmids)) for cluster_pmids in query_clusters_pmids]
 		
 		print ("Cluster ID\tRelevance Score")
 		for i in range(0,num_clusters):
 		    print (str(i) + "\t\t" + str(cluster_score_relative[i]))
+
+		print ("Cluster ID\tRelevance Score\t\tBlind Intersect")
+		for i in range(0,num_clusters):
+			print (str(i) + "\t\t" + str(cluster_score_relative[i]) + "\t\t\t" + str(cluster_blind_intersect[i]))
 
 		clus_dict = OrderedDict()
 		final_corpus = set()
